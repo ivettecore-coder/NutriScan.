@@ -17,12 +17,21 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Generate Android Project & Build APK
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate Project and Build APK
         run: |
           mkdir -p app/src/main/java/com/nutriscan
-          cp MainActivity.kt app/src/main/java/com/nutriscan/
           
-          # Generar build.gradle raíz
+          # Verificar nombre del archivo Kotlin
+          if [ -f "Actividad principal.kt" ]; then
+            cp "Actividad principal.kt" app/src/main/java/com/nutriscan/MainActivity.kt
+          elif [ -f "MainActivity.kt" ]; then
+            cp MainActivity.kt app/src/main/java/com/nutriscan/
+          fi
+
+          # Crear build.gradle
           cat << 'EOF' > build.gradle
           buildscript {
               repositories { google(); mavenCentral() }
@@ -31,10 +40,8 @@ jobs:
           allprojects { repositories { google(); mavenCentral() } }
           EOF
 
-          # Generar settings.gradle
           echo "include ':app'" > settings.gradle
 
-          # Generar app/build.gradle
           mkdir -p app
           cat << 'EOF' > app/build.gradle
           plugins { id 'com.android.application' }
@@ -51,7 +58,6 @@ jobs:
           }
           EOF
 
-          # Generar AndroidManifest.xml
           mkdir -p app/src/main
           cat << 'EOF' > app/src/main/AndroidManifest.xml
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
@@ -66,9 +72,7 @@ jobs:
           </manifest>
           EOF
 
-          # Instalar wrapper Gradle y compilar APK
-          gradle wrapper
-          ./gradlew assembleDebug
+          gradle build
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
