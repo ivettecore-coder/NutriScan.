@@ -17,9 +17,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Gradle
-        run: sudo apt-get update && sudo apt-get install -y gradle
-
       - name: Build APK
         run: |
           mkdir -p app/src/main/java/com/nutriscan
@@ -70,7 +67,11 @@ jobs:
           </manifest>
           EOF
 
-          gradle assembleDebug
+          # Instalar Gradle Wrapper con versión 8.0 moderna
+          wget https://services.gradle.org/distributions/gradle-8.0-bin.zip
+          unzip -q gradle-8.0-bin.zip
+          ./gradle-8.0/bin/gradle wrapper --gradle-version 8.0
+          ./gradlew assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
