@@ -1,4 +1,4 @@
-name: Compilar APK NutriScan
+name: NutriScan App Build
 
 on:
   push:
@@ -8,16 +8,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Descargar código
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Guardar código ejecutable
-        run: |
-          mkdir -p app/src/main/java/com/nutriscan
-          cp MainActivity.kt app/src/main/java/com/nutriscan/
-
-      - name: Subir artefacto APK
+      - name: Guardar paquete de app
         uses: actions/upload-artifact@v3
         with:
           name: NutriScan-App
-          path: MainActivity.kt
+          path: Actividad principal.kt
+
