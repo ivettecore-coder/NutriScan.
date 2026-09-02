@@ -17,21 +17,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
+      - name: Install Gradle
+        run: sudo apt-get update && sudo apt-get install -y gradle
 
-      - name: Generate Project and Build APK
+      - name: Build APK
         run: |
           mkdir -p app/src/main/java/com/nutriscan
           
-          # Verificar nombre del archivo Kotlin
           if [ -f "Actividad principal.kt" ]; then
             cp "Actividad principal.kt" app/src/main/java/com/nutriscan/MainActivity.kt
           elif [ -f "MainActivity.kt" ]; then
             cp MainActivity.kt app/src/main/java/com/nutriscan/
           fi
 
-          # Crear build.gradle
           cat << 'EOF' > build.gradle
           buildscript {
               repositories { google(); mavenCentral() }
@@ -72,7 +70,7 @@ jobs:
           </manifest>
           EOF
 
-          gradle build
+          gradle assembleDebug
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
